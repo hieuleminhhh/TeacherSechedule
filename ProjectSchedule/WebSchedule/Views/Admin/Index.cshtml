@@ -1,0 +1,722 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrator's Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --color-primary: #002147;
+            --color-secondary: #ffffff;
+            --color-accent: #37A594;
+            --color-yellow: #FFA606;
+            --color-dark: #333;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--color-secondary);
+            color: var(--color-dark);
+        }
+
+        .container {
+            display: flex;
+            max-width: 2000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .bar {
+            flex: 0 0 200px;
+            background-color: var(--color-primary);
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .view {
+            flex-grow: 1;
+            margin-left: 20px;
+        }
+
+        .side-bar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+            .side-bar ul li {
+                margin-bottom: 10px;
+            }
+
+                .side-bar ul li a {
+                    color: var(--color-secondary);
+                    text-decoration: none;
+                    display: block;
+                    padding: 10px;
+                    border-radius: 5px;
+                    transition: background-color 0.3s ease;
+                }
+
+                    .side-bar ul li a:hover {
+                        background-color: var(--color-accent);
+                    }
+
+                    .side-bar ul li a .title {
+                        margin-left: 10px;
+                    }
+
+        .view h1 {
+            color: var(--color-primary);
+            margin-bottom: 20px;
+        }
+
+        .accordion-body {
+            display: none;
+            padding: 20px;
+            background-color: var(--color-secondary);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            background-color: var(--color-yellow);
+            color: var(--color-secondary);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+            .btn:hover {
+                background-color: #FFCC00;
+            }
+
+        #semesterTables table {
+            border: 2px solid #ccc;
+            margin: 10px;
+            border-collapse: collapse;
+        }
+
+            #semesterTables table th {
+                background-color: #f2f2f2;
+                border: 1px solid #ccc;
+                padding: 8px;
+            }
+
+            #semesterTables table td {
+                border: 1px solid #ccc;
+                padding: 8px;
+            }
+
+            #semesterTables table caption {
+                text-align: left;
+                font-weight: bold;
+            }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="bar">
+            <aside class="side-bar-wrap">
+                <nav class="side-bar">
+                    <div class="logo-area">
+                        <img class="max" src="https://eclesial.theos.com.br/assets/img/eclesial/logo_eclesial_login.svg" alt="logo">
+                    </div>
+                    <h4>Pastoral</h4>
+                    <ul>
+                        <li data-target="dashboard">
+                            <a href="#">
+                                <span class="title"><i class="bi bi-pie-chart icon"></i> Dashboard</span>
+                            </a>
+                        </li>
+                        <li data-target="createsubject">
+                            <a href="#">
+                                <span class="title"><i class="bi bi-person-lines-fill icon"></i>Manage Subject</span>
+                            </a>
+                        </li>
+                        <li data-target="createclass">
+                            <a href="#">
+                                <span class="title"><i class="bi bi-person-lines-fill icon"></i>Manage Class</span>
+                            </a>
+                        </li>
+                        <li data-target="createsubjectinclass">
+                            <a href="#">
+                                <span class="title"><i class="bi bi-person-lines-fill icon"></i>Subject In Class</span>
+                            </a>
+                        </li>
+                        <li data-target="createscheduleforTeacher">
+                            <a href="#">
+                                <span class="title"><i class="bi bi-person-lines-fill icon"></i>Schedule Teacher</span>
+                            </a>
+                        </li>
+
+                    </ul>
+                </nav>
+            </aside>
+        </div>
+
+        <div class="view">
+            <h1 class="title" style="width: 1000px">Administrator's Manager</h1>
+            <ul class="navbar-nav" id="userLinks">
+            </ul>
+            <div id="dashboard" class="accordion-body" style="display: none;">
+                <div class="widget">
+                    <h2>Revenue Overview</h2>
+                    <div class="chart-container">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="createclass" class="accordion-body" style="display: none;">
+                <h1>Create class</h1>
+                <div class="form-group">
+                    <label for="className">Class Name:</label>
+                    <input type="text" class="form-control" id="className" name="className" required>
+                </div>
+                <button type="submit" id="createClassBtn" class="btn btn-primary">Create</button>
+            </div>
+            <div id="createsubject" class="accordion-body" style="display: none;">
+                <div id="viewsubject"></div>
+                <h1>Create Subject</h1>
+                <div class="form-group">
+                    <label for="subjectName">Subject Name:</label>
+                    <input type="text" class="form-control" id="subjectName" required>
+                </div>
+                <div class="form-group">
+                    <label for="subjectCode">Subject Code:</label>
+                    <input type="text" class="form-control" id="subjectCode" required>
+                </div>
+                <div class="form-group">
+                    <label for="semester">Semester:</label>
+                    <select id="semester" class="form-control" required>
+                        <option value="">Select Semester</option>
+
+                    </select>
+                </div>
+                <button type="submit" id="createSubjectBtn" class="btn btn-primary">Create</button>
+            </div>
+            <div id="createsubjectinclass" class="accordion-body" style="display: none;">
+                <h1>Create Subject In Class</h1>
+                <div class="form-group">
+                    <label for="subjectName">Subject Name:</label>
+                    <select id="subjectDropdown" class="form-control" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="className">Class Name:</label>
+                    <select id="classDropdown" class="form-control" required></select>
+                </div>
+                <button type="submit" id="createSubjectInClassBtn" class="btn btn-primary">Create</button>
+            </div>
+
+            <div id="createscheduleforTeacher" class="accordion-body" style="display: none;">
+                <h1 class="mt-5">Admin view timeable for teaching</h1>
+                <div class="container-fluid timetable">
+                    <div>
+                        <label for="week">Week:</label>
+                        <select id="week" name="week">
+                        </select>
+
+                        <label for="year">Year:</label>
+                        <select id="year" name="year">
+                        </select>
+                        <label for="teacherEmail">Teacher:</label>
+                        <select id="teacherEmail" name="teacherEmail">
+                        </select>
+                    </div>
+                    <div style="text-align: center"><button class="btn btn-primary" onclick="exportToExcel()">Export to Excel</button></div>
+                    <table class="table table-bordered">
+                        <thead id="timetable-head">
+                        </thead>
+                        <tbody id="timetable-body">
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        const showDashboardByDefault = () => {
+            const dashboardSection = document.getElementById('dashboard');
+            dashboardSection.style.display = 'block';
+        };
+        const initNavBar = () => {
+            const menusEl = document.querySelectorAll('.side-bar ul li')
+            menusEl.forEach(menu => menu.addEventListener('click', () => {
+                const target = menu.getAttribute('data-target')
+                const contentSections = document.querySelectorAll('.accordion-body')
+                contentSections.forEach(section => {
+                    if (section.id === target) {
+                        section.style.display = 'block'
+                    } else {
+                        section.style.display = 'none'
+                    }
+                })
+            }))
+            showDashboardByDefault();
+        }
+
+        initNavBar()
+
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        const revenueChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+                datasets: [{
+                    label: 'Revenue',
+                    data: [1000, 1500, 1200, 1700, 1400, 1800],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        $(document).ready(function () {
+            $.ajax({
+                url: 'https://localhost:7535/api/Semester/GetSemester',
+                type: 'GET',
+                success: function (data) {
+                    $('#semester').empty();
+
+                    $('#semester').append('<option value="">Select Semester</option>');
+
+                    data.forEach(function (semester) {
+                        $('#semester').append('<option value="' + semester.semesterId + '">' + semester.semesterName + '</option>');
+                    });
+                },
+                error: function (xhr, status, error) {
+                    // Xử lý lỗi nếu có
+                    console.error('Error:', error);
+                }
+            });
+        });
+        
+
+        function createSubject() {
+            var subjectName = $('#subjectName').val();
+            var subjectCode = $('#subjectCode').val();
+            var semesterId = $('#semester').val();
+            var data = {
+                SubjectName: subjectName,
+                SubjectCode: subjectCode,
+                SemesterId: semesterId
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: 'https://localhost:7535/api/Subject/CreateSubject',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function (response) {
+                    console.log('Subject created successfully:', response);
+                    alert('Subject created successfully');
+                    location.reload();
+
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $('#createSubjectBtn').click(function () {
+                createSubject();
+            });
+        });
+        $(document).ready(function () {
+            $.ajax({
+                url: 'https://localhost:7535/api/Subject/GetSubjectBySemesters',
+                type: 'GET',
+                success: function (data) {
+                    $('#viewsubject').empty();
+
+                    var subjectsBySemester = {};
+
+                    data.forEach(function (subject) {
+                        if (!subjectsBySemester[subject.semesterId]) {
+                            subjectsBySemester[subject.semesterId] = {
+                                name: subject.semesterName,
+                                subjects: []
+                            };
+                        }
+                        subjectsBySemester[subject.semesterId].subjects.push(subject);
+                    });
+
+                    var containerHtml = '<div id="semesterTables" style="display: flex; flex-wrap: wrap;"></div>';
+                    $('#viewsubject').append(containerHtml);
+
+                    Object.keys(subjectsBySemester).forEach(semesterId => {
+                        var semester = subjectsBySemester[semesterId];
+                        var tableHtml = `<table>
+                                                            <thead>
+                                                                <tr>
+                                                                    <th colspan="2">${semester.name}</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>`;
+
+                        semester.subjects.forEach(subject => {
+                            tableHtml += `<tr>
+                                                            <td>${subject.subjectName}</td>
+                                                            <td>${subject.subjectCode}</td>
+                                                        </tr>`;
+                        });
+
+                        tableHtml += `</tbody></table>`;
+
+                        $('#semesterTables').append(tableHtml);
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+
+        function createClass() {
+            var className = $('#className').val();
+
+            var classData = {
+                ClassName: className
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: 'https://localhost:7535/api/Class/CreateClass',
+                contentType: 'application/json',
+                data: JSON.stringify(classData),
+                success: function (response) {
+                    console.log('Class created successfully:', response);
+                    alert('Subject created successfully');
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+
+                }
+            });
+        }
+        $(document).ready(function () {
+            $('#createClassBtn').click(function () {
+                createClass();
+            });
+        });
+
+        $(document).ready(function () {
+            $.ajax({
+                url: 'https://localhost:7535/api/Subject/GetSubjectCode',
+                type: 'GET',
+                success: function (data) {
+                    $('#subjectDropdown').empty();
+                    $('#subjectDropdown').append('<option value="">Select Subject</option>');
+                    data.forEach(function (subject) {
+                        $('#subjectDropdown').append('<option value="' + subject.subjectId + '">' + subject.subjectCode + '</option>');
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+
+            $(document).ready(function () {
+                $.ajax({
+                    url: 'https://localhost:7535/api/Class/GetClass',
+                    type: 'GET',
+                    success: function (data) {
+                        $('#classDropdown').empty();
+                        $('#classDropdown').append('<option value="">Select Class</option>');
+                        data.forEach(function (classItem) {
+                            $('#classDropdown').append('<option value="' + classItem.classId + '">' + classItem.className + '</option>');
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+                });
+            });
+        });
+        function createSubjectInClass() {
+            var subjectId = $('#subjectDropdown').val();
+            var classId = $('#classDropdown').val();
+            var data = {
+                SubjectId: subjectId,
+                ClassId: classId,
+            };
+            console.log(data);
+            $.ajax({
+                type: 'POST',
+                url: 'https://localhost:7535/api/Subject/CreateSubjectInClass/' + subjectId + '/' + classId,
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function (response) {
+                    console.log('Subject In Class created successfully:', response);
+                    alert('Subject created successfully');
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+        }
+        $(document).ready(function () {
+            $('#createSubjectInClassBtn').click(function () {
+                createSubjectInClass();
+            });
+        });
+        $(document).ready(function () {
+            $.ajax({
+                url: 'https://localhost:7535/api/GetUserByEmail',
+                type: 'GET',
+                success: function (data) {
+                    var selectedTeacherId = 1;
+                    $('#teacherEmail').empty();
+                    data.forEach(function (teacherItem) {
+                        var selected = (teacherItem.teacherId === selectedTeacherId) ? 'selected' : '';
+                        $('#teacherEmail').append('<option value="' + teacherItem.teacherId + '" ' + selected + '>' + teacherItem.email + '</option>');
+                    });
+                    loadSchedule();
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+        $(document).ready(function () {
+            loadSchedule();
+            populateWeeks();
+            populateYears();
+
+            $('#week, #year ,#teacherEmail').change(function () {
+                var teacherId = $('#teacherEmail').val();
+                getScheduleByTeacher(teacherId);
+            });
+        });
+
+        function loadSchedule() {
+            var teacherId = $('#teacherEmail').val();
+            $.get("https://localhost:7535/api/Schedule/GetScheduleByTeacher/" + teacherId, function (data) {
+                renderSchedule(data);
+            });
+        }
+        function getWeekNumber(date) {
+            date = new Date(date);
+            date.setHours(0, 0, 0, 0);
+            date.setDate(date.getDate() + 4 - (date.getDay() || 7));
+            var yearStart = new Date(date.getFullYear(), 0, 1);
+
+            var weekNumber = Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+
+            return weekNumber;
+        }
+
+
+        function getScheduleByTeacher(teacherId) {
+            var year = $('#year').val();
+            var startDate = encodeURIComponent($('#week option:selected').text().split(' ')[0]);
+            var endDate = encodeURIComponent($('#week option:selected').text().split(' ')[2]);
+            var apiUrl = `https://localhost:7535/api/Schedule/GetScheduleBydd/MM/yyyy/${teacherId}/${startDate}/${endDate}/${year}`;
+
+            $.get(apiUrl, function (data) {
+                renderSchedule(data);
+            });
+        }
+
+        function renderSchedule(data) {
+            var timetableBody = $('#timetable-body');
+            var daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+            var slots = {};
+
+            // Initialising slots
+            for (var i = 0; i < 5; i++) {
+                slots[i + 1] = {};
+            }
+
+            // Sorting data from API into slots
+            data.forEach(function (schedule) {
+                var slotId = schedule.slotId;
+                var dayOfWeek = schedule.dayOfWeek;
+                slots[slotId][dayOfWeek] = schedule;
+            });
+
+            // Building timetable table
+            var html = '<tr><th>Slot</th>';
+            for (var i = 0; i < daysOfWeek.length; i++) {
+                html += '<th class="weekend">' + daysOfWeek[i] + '</th>';
+            }
+            html += '</tr>';
+
+            // Adding second row with dates
+            html += '<tr><td>Date</td>';
+            for (var k = 0; k < daysOfWeek.length; k++) {
+                var dateCell = '';
+                var dayOfWeek = daysOfWeek[k];
+                data.forEach(function (schedule) {
+                    if (schedule.dayOfWeek === dayOfWeek) {
+                        var date = new Date(schedule.date);
+                        var dateOfMonth = date.getDate();
+                        var month = date.getMonth() + 1;
+                        dateCell = '<td class="weekend">' + dateOfMonth + '/' + month + '</td>';
+                    }
+                });
+                html += dateCell || '<td class="weekend"></td>';
+            }
+            html += '</tr>';
+
+            // Adding timetable rows
+            for (var i = 1; i <= 5; i++) {
+                html += '<tr><td>Slot ' + i + '</td>';
+                for (var j = 0; j < daysOfWeek.length; j++) {
+                    var dayOfWeek = daysOfWeek[j];
+                    var schedule = slots[i][dayOfWeek];
+                    if (schedule) {
+                        html += '<td class="content">' + schedule.subjectCode + ' - ' + schedule.className + '<br>' + schedule.startTime + ' - ' + schedule.endTime + '<br>' + schedule.teacherName +
+                            '<br><button class="delete-schedule" data-schedule-id="' + schedule.scheduleId + '">Delete</button></td>';
+                    } else {
+                        html += '<td class="content"></td>';
+                    }
+                }
+                html += '</tr>';
+            }
+
+            // Displaying timetable
+            timetableBody.html(html);
+        }
+
+        function formatTwoDigits(number) {
+            return (number < 10 ? '0' : '') + number;
+        }
+
+        function populateWeeks() {
+            var select = document.getElementById('week');
+            var currentDate = new Date();
+            var currentWeekNumber = getWeekNumber(currentDate);
+
+            for (var i = 1; i <= 52; i++) {
+                var startOfWeek = new Date(currentDate.getFullYear(), 0, (i - 1) * 7 + 1);
+                var endOfWeek = new Date(currentDate.getFullYear(), 0, (i - 1) * 7 + 7);
+
+                var option = document.createElement('option');
+                option.value = i;
+                var startDay = formatTwoDigits(startOfWeek.getDate());
+                var startMonth = formatTwoDigits(startOfWeek.getMonth() + 1);
+                var endDay = formatTwoDigits(endOfWeek.getDate());
+                var endMonth = formatTwoDigits(endOfWeek.getMonth() + 1);
+
+                option.text = startDay + '/' + startMonth + ' To ' + endDay + '/' + endMonth;
+                select.appendChild(option);
+
+                if (i === currentWeekNumber) {
+                    option.selected = true;
+                }
+            }
+        }
+
+        function populateYears() {
+            var select = document.getElementById('year');
+            var currentYear = new Date().getFullYear();
+
+            for (var i = currentYear; i >= currentYear - 4; i--) {
+                var option = document.createElement('option');
+                option.value = i;
+                option.text = i;
+                select.appendChild(option);
+                if (i === currentYear) {
+                    option.selected = true;
+                }
+            }
+        }
+        $(document).on('click', '.delete-schedule', function () {
+            var scheduleId = $(this).data('schedule-id');
+            deleteSchedule(scheduleId);
+        });
+
+        function deleteSchedule(scheduleId) {
+            $.ajax({
+                url: 'https://localhost:7535/api/Schedule/DeleteSchedule/' + scheduleId,
+                type: 'DELETE',
+                success: function (result) {
+                    // Reload schedule after deletion
+                    loadSchedule();
+                    alert('Schedule deleted successfully.');
+                },
+                error: function (xhr, status, error) {
+                    console.error(xhr.responseText);
+                    alert('Error deleting schedule.');
+                }
+            });
+        }
+        function exportToExcel() {
+            var table = document.getElementById('timetable-body');
+            var rows = table.getElementsByTagName('tr');
+            var csv = [];
+
+            for (var i = 0; i < rows.length; i++) {
+                var row = [], cols = rows[i].querySelectorAll('td, th');
+
+                for (var j = 0; j < cols.length; j++) {
+                    var cellText = cols[j].innerText || cols[j].textContent;
+                    row.push('"' + cellText.trim().replace(/"/g, '""') + '"');
+                }
+
+                csv.push(row.join(','));
+            }
+
+
+            var csvContent = csv.join('\n');
+
+            var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+            var url = URL.createObjectURL(blob);
+            var downloadLink = document.createElement("a");
+            downloadLink.href = url;
+            downloadLink.download = 'Timetable.csv';
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+        $(document).ready(function () {
+            var teacherId = localStorage.getItem("teacherId");
+            var userLinks = $("#userLinks");
+
+            if (teacherId) {
+                $.ajax({
+                    type: "GET",
+                    url: "https://localhost:7535/api/GetUserById/" + teacherId,
+                    success: function (response) {
+                        var userInfo = response.firstName + " " + response.lastName;
+                        userLinks.html('<li class="nav-item"><a class="nav-link logout" href="#">Logout</a></li>');
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        alert(xhr.responseText);
+                    }
+                });
+            } else {
+                userLinks.html('<li class="nav-item"><a class="nav-link login" href="/Home/Login">Login</a></li><li class="nav-item"><a class="nav-link register" href="/Home/Register">Signin</a></li>');
+            }
+
+            $("body").on("click", ".logout", function () {
+                localStorage.removeItem("teacherId");
+                window.location.href = "/Home"
+            });
+        });
+    </script>
+
+
+</body>
+
+</html>

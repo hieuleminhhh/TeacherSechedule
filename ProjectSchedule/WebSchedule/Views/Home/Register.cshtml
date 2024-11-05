@@ -1,0 +1,139 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Register";
+}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 5rem;
+        }
+
+        .form-signin {
+            width: 100%;
+            max-width: 330px;
+            padding: 15px;
+            margin: auto;
+        }
+
+            .form-signin .form-control {
+                position: relative;
+                box-sizing: border-box;
+                height: auto;
+                padding: 10px;
+                font-size: 16px;
+            }
+
+                .form-signin .form-control:focus {
+                    z-index: 2;
+                }
+
+            .form-signin input[type="text"] {
+                margin-bottom: -1px;
+                border-bottom-right-radius: 0;
+                border-bottom-left-radius: 0;
+            }
+
+            .form-signin input[type="password"] {
+                margin-bottom: 10px;
+                border-top-left-radius: 0;
+                border-top-right-radius: 0;
+            }
+    </style>
+</head>
+<body class="text-center">
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand" href="#">Websize University</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/Home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Contact</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="/Home/Login">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Home/Register">Register</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <form class="form-signin" id="registerForm">
+        <img class="mb-4" src="https://getbootstrap.com/docs/4.5/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
+        <h1 class="h3 mb-3 font-weight-normal">Register</h1>
+        <label for="inputFristName" class="sr-only">First name</label>
+        <input type="text" id="inputFristName" class="form-control" placeholder="First name" required autofocus>
+        <label for="inputLastName" class="sr-only">Last name</label>
+        <input type="text" id="inputLastName" class="form-control" placeholder="Last name" required autofocus>
+        <label for="inputEmail" class="sr-only">Email address</label>
+        <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required>
+        <label for="inputPhone" class="sr-only">Phone number</label>
+        <input type="number" id="inputPhone" class="form-control" placeholder="Phone number" required>
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+        <label for="inputConfirmPassword" class="sr-only">Confirm Password</label>
+        <input type="password" id="inputConfirmPassword" class="form-control" placeholder="Confirm Password" required>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
+        <p class="mt-5 mb-3 text-muted">&copy; 2020-2024</p>
+    </form>
+</body>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#registerForm').submit(function (event) {
+            event.preventDefault(); 
+
+            var firstname = $('#inputFristName').val();
+            var lastname = $('#inputLastName').val();
+            var email = $('#inputEmail').val();
+            var phone = $('#inputPhone').val();
+            var password = $('#inputPassword').val();
+            var confirmPassword = $('#inputConfirmPassword').val();
+
+            if (password !== confirmPassword) {
+                alert("Passwords do not match");
+                return;
+            }
+            var data = {
+                FirstName: firstname,
+                LastName: lastname,
+                Email: email,
+                Password: password,                
+                PhoneNumber: phone,
+                Role: "Teacher" 
+            };
+
+            $.ajax({
+                url: 'https://localhost:7535/api/Register',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function (response) {
+                    alert("Register Successful");
+                    window.location.href = "/Home/Login";
+                },
+                error: function (error) {
+                    alert(error.responseText);
+                    console.log(error);
+                }
+            });
+        });
+    });
+</script>

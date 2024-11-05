@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Class</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom CSS */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .table th, .table td {
+            vertical-align: middle;
+        }
+
+        .cell {
+            width: 10%; /* Set the width to 10% for each cell */
+        }
+
+        .table tbody tr:hover {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>Select Class</h1>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th colspan="2">Class Name</th>
+                    </tr>
+                </thead>
+                <tbody id="class-table-body">
+                    <!-- Class names will be added here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Function to fetch class names via AJAX
+            function getClassNames() {
+                $.ajax({
+                    url: 'https://localhost:7535/api/Class/GetClass',
+                    type: 'GET',
+                    success: function (data) {
+
+                        $("#class-table-body").empty();
+
+                        var colCount = 10;
+                        var rowCount = Math.ceil(data.length / colCount);
+
+                        var cellIndex = 0;
+
+                        for (var i = 0; i < rowCount; i++) {
+                            var $row = $("<tr>");
+                            for (var j = 0; j < colCount; j++) {
+                                var className = (cellIndex < data.length) ? data[cellIndex].className : "";
+                                var classId = (cellIndex < data.length) ? data[cellIndex].classId : "";
+                                $row.append("<td class='cell' data-class-id='" + classId + "'>" + className + "</td>");
+                                cellIndex++;
+                            }
+                            $("#class-table-body").append($row);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(error);
+                    }
+                });
+            }
+            getClassNames();
+
+            $(document).on("mouseenter", "tr", function () {
+                $(this).css("cursor", "pointer");
+            });
+
+            $(document).on("mouseleave", "tr", function () {
+                $(this).css("cursor", "default");
+            });
+
+            $(document).on("click", ".cell", function () {
+                var classId = $(this).data("class-id");
+                console.log("Class ID:", classId);
+                window.location.href = "/Schedule/List?id=" + classId;
+            });
+
+        });
+    </script>
+</body>
+</html>

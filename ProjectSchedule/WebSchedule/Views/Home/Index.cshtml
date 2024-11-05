@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+            padding-top: 5rem;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .jumbotron {
+            background-color: #343a40;
+            color: #fff;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .jumbotron p {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .jumbotron .btn {
+            margin-top: 1rem;
+            margin-right: 1rem;
+        }
+
+        .footer {
+            background-color: #343a40;
+            color: #fff;
+            padding: 1rem 0;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .footer p {
+            margin-bottom: 0;
+        }
+
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand" href="#">Websize University</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/Home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Contact</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav" id="userLinks">
+              
+            </ul>
+        </div>
+    </nav>
+
+    <main role="main" class="container">
+        <div class="jumbotron text-center">
+            <img src="https://i.pinimg.com/originals/d0/1e/38/d01e3819b4dfc001100fd9966d9837a2.jpg" alt="University Image" class="mb-3 img-fluid rounded-circle" style="max-width: 200px;">
+            <h1 class="display-4">Welcome To Schedule Websize</h1>
+            <p class="lead">Where knowledge meets innovation</p>
+            <a class="btn btn-primary btn-lg" href="/Class">Register your class for a course</a>
+            <a class="btn btn-secondary btn-lg" href="/Class/List">View a class timetable</a>
+            <a class="btn btn-info btn-lg" href="/Schedule">My timetable</a>
+        </div>
+    </main>
+
+   
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.5.4/umd/popper.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var teacherId = localStorage.getItem("teacherId");
+            var userLinks = $("#userLinks");
+
+            if (teacherId) {
+                $.ajax({
+                    type: "GET",
+                    url: "https://localhost:7535/api/GetUserById/" + teacherId,
+                    success: function (response) {
+                        var userInfo = response.firstName + " " + response.lastName;
+                        userLinks.html('<li class="nav-item"><a style="color: #ff6666" class="nav-link" href="#">' + "Hi! " + userInfo + '</a></li><li class="nav-item"><a class="nav-link logout" href="#">Logout</a></li>');
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        alert(xhr.responseText);
+                    }
+                });
+            } else {
+                userLinks.html('<li class="nav-item"><a class="nav-link login" href="/Home/Login">Login</a></li><li class="nav-item"><a class="nav-link register" href="/Home/Register">Signin</a></li>');
+            }
+
+            $("body").on("click", ".logout", function () {
+                localStorage.removeItem("teacherId");
+                window.location.reload(); 
+            });
+        });
+    </script>
+</body>
+</html>
